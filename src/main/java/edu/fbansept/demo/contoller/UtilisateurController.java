@@ -3,9 +3,12 @@ package edu.fbansept.demo.contoller;
 import edu.fbansept.demo.dao.UtilisateurDao;
 import edu.fbansept.demo.model.Utilisateur;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class UtilisateurController {
@@ -19,26 +22,52 @@ public class UtilisateurController {
     }
 
     @GetMapping("/utilisateur/{id}")
-    public Utilisateur getUtilisateurFranck(@PathVariable int id) {
+    public ResponseEntity<Utilisateur> getUtilisateurFranck(@PathVariable int id) {
 
-//        Optional<Utilisateur> optional = utilisateurDao.findById(id);
-//        return optional.orElse(null);
+        Optional<Utilisateur> optional = utilisateurDao.findById(id);
 
-        return utilisateurDao.findById(id).orElse(null);
+        if(optional.isPresent()) {
+            return new ResponseEntity<>(optional.get(), HttpStatus.OK);
+        }
 
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PostMapping("/utilisateur")
-    public boolean ajoutUtilisateur(@RequestBody Utilisateur nouvelUtilisateur) {
+    public ResponseEntity<Utilisateur> ajoutUtilisateur(@RequestBody Utilisateur nouvelUtilisateur) {
+
+        //si l'utilisateur fournit possède un id
+        if(nouvelUtilisateur.getId() != null) {
+
+            Optional<Utilisateur> optional = utilisateurDao.findById(nouvelUtilisateur.getId());
+
+            //si c'est un update
+            if(optional.isPresent()) {
+                utilisateurDao.save(nouvelUtilisateur);
+                return new ResponseEntity<>(nouvelUtilisateur,HttpStatus.OK);
+            }
+
+            //si il y a eu une tentative d'insertion d'un utilisateur avec un id qui n'existait pas
+            return new ResponseEntity<>(nouvelUtilisateur,HttpStatus.BAD_REQUEST);
+
+        }
+
         utilisateurDao.save(nouvelUtilisateur);
-        return true;
+        return new ResponseEntity<>(nouvelUtilisateur,HttpStatus.CREATED);
+
     }
 
     @DeleteMapping("/utilisateur/{id}")
-    public boolean supprimeUtilisateur(@PathVariable int id) {
+    public ResponseEntity<Utilisateur> supprimeUtilisateur(@PathVariable int id) {
 
-        utilisateurDao.deleteById(id);
-        return true;
+        Optional<Utilisateur> utilisateurAsupprimer = utilisateurDao.findById(id);
+
+        if(utilisateurAsupprimer.isPresent()) {
+            utilisateurDao.deleteById(id);
+            return new ResponseEntity<>(utilisateurAsupprimer.get(),HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 }
