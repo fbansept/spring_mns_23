@@ -1,7 +1,9 @@
 package edu.fbansept.demo.contoller;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import edu.fbansept.demo.dao.UtilisateurDao;
 import edu.fbansept.demo.model.Utilisateur;
+import edu.fbansept.demo.view.VueUtilisateur;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,18 +13,21 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin
 public class UtilisateurController {
 
     @Autowired
     private UtilisateurDao utilisateurDao;
 
-    @GetMapping("/utilisateurs")
+    @GetMapping("/admin/utilisateurs")
+    @JsonView(VueUtilisateur.class)
     public List<Utilisateur> getUtilisateurs() {
         return utilisateurDao.findAll();
     }
 
-    @GetMapping("/utilisateur/{id}")
-    public ResponseEntity<Utilisateur> getUtilisateurFranck(@PathVariable int id) {
+    @GetMapping("/admin/utilisateur/{id}")
+    @JsonView(VueUtilisateur.class)
+    public ResponseEntity<Utilisateur> getUtilisateur(@PathVariable int id) {
 
         Optional<Utilisateur> optional = utilisateurDao.findById(id);
 
@@ -33,7 +38,7 @@ public class UtilisateurController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping("/utilisateur")
+    @PostMapping("/admin/utilisateur")
     public ResponseEntity<Utilisateur> ajoutUtilisateur(@RequestBody Utilisateur nouvelUtilisateur) {
 
         //si l'utilisateur fournit possède un id
@@ -57,7 +62,7 @@ public class UtilisateurController {
 
     }
 
-    @DeleteMapping("/utilisateur/{id}")
+    @DeleteMapping("/admin/utilisateur/{id}")
     public ResponseEntity<Utilisateur> supprimeUtilisateur(@PathVariable int id) {
 
         Optional<Utilisateur> utilisateurAsupprimer = utilisateurDao.findById(id);
