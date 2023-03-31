@@ -1,24 +1,51 @@
 package edu.fbansept.demo.security;
 
+import edu.fbansept.demo.model.Utilisateur;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 public class MonUserDetails implements UserDetails {
+
+    private Utilisateur utilisateur;
+
+    public MonUserDetails(Utilisateur utilisateur) {
+        this.utilisateur = utilisateur;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+
+//        List<GrantedAuthority> roles = new ArrayList<>();
+//
+//        if(utilisateur.isAdmin()) {
+//            roles.add(new SimpleGrantedAuthority("ROLE_ADMINISTRATEUR"));
+//        } else {
+//            roles.add(new SimpleGrantedAuthority("ROLE_UTILISATEUR"));
+//        }
+//        return roles;
+
+//        return utilisateur.isAdmin()
+//                ? List.of(new SimpleGrantedAuthority("ROLE_ADMINISTRATEUR"))
+//                : List.of(new SimpleGrantedAuthority("ROLE_UTILISATEUR"));
+
+        return List.of(new SimpleGrantedAuthority(utilisateur.isAdmin() ? "ROLE_ADMINISTRATEUR" : "ROLE_UTILISATEUR"));
+
     }
 
     @Override
     public String getPassword() {
-        return null;
+        return utilisateur.getMotDePasse();
     }
 
     @Override
     public String getUsername() {
-        return null;
+        return utilisateur.getEmail();
     }
 
     @Override
