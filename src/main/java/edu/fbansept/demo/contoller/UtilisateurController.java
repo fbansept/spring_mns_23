@@ -2,8 +2,11 @@ package edu.fbansept.demo.contoller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import edu.fbansept.demo.dao.UtilisateurDao;
+import edu.fbansept.demo.model.Role;
 import edu.fbansept.demo.model.Utilisateur;
+import edu.fbansept.demo.security.JwtUtils;
 import edu.fbansept.demo.view.VueUtilisateur;
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,15 +22,20 @@ public class UtilisateurController {
     @Autowired
     private UtilisateurDao utilisateurDao;
 
-    @GetMapping("/admin/utilisateurs")
+    @Autowired
+    JwtUtils jwtUtils;
+
+    @GetMapping("/utilisateurs")
     @JsonView(VueUtilisateur.class)
     public List<Utilisateur> getUtilisateurs() {
         return utilisateurDao.findAll();
     }
 
-    @GetMapping("/admin/utilisateur/{id}")
+    @GetMapping("/utilisateur/{id}")
     @JsonView(VueUtilisateur.class)
     public ResponseEntity<Utilisateur> getUtilisateur(@PathVariable int id) {
+
+        //return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 
         Optional<Utilisateur> optional = utilisateurDao.findById(id);
 
@@ -38,7 +46,21 @@ public class UtilisateurController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping("/admin/utilisateur")
+    @GetMapping("/profil")
+    @JsonView(VueUtilisateur.class)
+    public ResponseEntity<Utilisateur> getProfil(@RequestHeader("Authorization") String bearer) {
+        String jwt = bearer.substring(7);
+        Claims donnees = jwtUtils.getData(jwt);
+        Optional<Utilisateur> utilisateur = utilisateurDao.findByEmail(donnees.getSubject());
+
+        if(utilisateur.isPresent()) {
+            return new ResponseEntity<>(utilisateur.get(), HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping("/utilisateur")
     public ResponseEntity<Utilisateur> ajoutUtilisateur(@RequestBody Utilisateur nouvelUtilisateur) {
 
         //si l'utilisateur fournit possède un id
@@ -48,7 +70,13 @@ public class UtilisateurController {
 
             //si c'est un update
             if(optional.isPresent()) {
-                utilisateurDao.save(nouvelUtilisateur);
+
+                Utilisateur userToUpdate = optional.get();
+                userToUpdate.setNom(nouvelUtilisateur.getNom());
+                userToUpdate.setPrenom(nouvelUtilisateur.getPrenom());
+                userToUpdate.setEmail(nouvelUtilisateur.getEmail());
+
+                utilisateurDao.save(userToUpdate);
                 return new ResponseEntity<>(nouvelUtilisateur,HttpStatus.OK);
             }
 
@@ -57,19 +85,24 @@ public class UtilisateurController {
 
         }
 
+        Role role = new Role();
+        role.setId(1);
+        nouvelUtilisateur.setRole(role);
         utilisateurDao.save(nouvelUtilisateur);
         return new ResponseEntity<>(nouvelUtilisateur,HttpStatus.CREATED);
 
     }
 
-    @DeleteMapping("/admin/utilisateur/{id}")
+    @DeleteMapping("/utilisateur/{id}")
+    @JsonView(VueUtilisateur.class)
     public ResponseEntity<Utilisateur> supprimeUtilisateur(@PathVariable int id) {
 
         Optional<Utilisateur> utilisateurAsupprimer = utilisateurDao.findById(id);
 
         if(utilisateurAsupprimer.isPresent()) {
             utilisateurDao.deleteById(id);
-            return new ResponseEntity<>(utilisateurAsupprimer.get(),HttpStatus.OK);
+
+            return new ResponseEntity<>(null,HttpStatus.OK);
         }
 
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);

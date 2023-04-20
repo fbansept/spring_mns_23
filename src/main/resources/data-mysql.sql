@@ -13,10 +13,14 @@ INSERT INTO `emploi` (`id`, `nom`) VALUES
 (2, 'Testeur'),
 (3, 'Chef de projet');
 
-INSERT INTO utilisateur(prenom, nom, pays_id, entreprise_id, email, mot_de_passe, admin)
+INSERT INTO `role` (`id`, `nom`) VALUES
+(1, 'ROLE_UTILISATEUR'),
+(2, 'ROLE_ADMINISTRATEUR');
+
+INSERT INTO utilisateur(prenom, nom, pays_id, entreprise_id, email, mot_de_passe, role_id)
 VALUES
-("John","DOE",2,1,"jd@a.com","root",0),
-("Franck","BANSEPT",3,1,"fb@a.com","root",1);
+("John","DOE",2,1,"jd@a.com","$2a$10$wXW2wHA2bu1TdQ26p.2UoehWv8m92w88kabSeL.348VqkpWvSt51q",1),
+("Franck","BANSEPT",3,1,"fb@a.com","$2a$10$wXW2wHA2bu1TdQ26p.2UoehWv8m92w88kabSeL.348VqkpWvSt51q",2);
 
 INSERT INTO `recherche_emploi_utilisateur` (`utilisateur_id`, `emploi_id`) VALUES
 (1, 1),

@@ -35,7 +35,8 @@ public class Utilisateur {
     private String motDePasse;
 
     @JsonView({VueUtilisateur.class , VueEntreprise.class})
-    private boolean admin;
+    @ManyToOne
+    private Role role;
 
     @ManyToOne
     @JsonView(VueUtilisateur.class)

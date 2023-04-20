@@ -8,10 +8,16 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.web.cors.CorsConfiguration;
 
+import javax.annotation.security.PermitAll;
 import javax.sql.DataSource;
+import java.util.Arrays;
 
 @EnableWebSecurity
 public class ConfigurationSecurite extends WebSecurityConfigurerAdapter {
@@ -21,6 +27,9 @@ public class ConfigurationSecurite extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private MonUserDetailsService monUserDetailsService;
+
+    @Autowired
+    JwtFilter filtre;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -32,16 +41,34 @@ public class ConfigurationSecurite extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        http.authorizeRequests()
+
+        http.cors().configurationSource(httpServletRequest -> {
+                    CorsConfiguration corsConfiguration = new CorsConfiguration();
+                    corsConfiguration.applyPermitDefaultValues();
+                    corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "DELETE", "PUT"));
+                    corsConfiguration.setAllowedHeaders(
+                            Arrays.asList("X-Requested-With", "Origin", "Content-Type",
+                                    "Accept", "Authorization","Access-Control-Allow-Origin"));
+                    return corsConfiguration;
+                }).and()
+                .csrf().disable()
+                .authorizeRequests()
                 .antMatchers("/admin/**").hasRole("ADMINISTRATEUR")
+                .antMatchers("/connexion", "/inscription", "/utilisateurs","/utilisateur", "/utilisateur/**").permitAll()
                 .antMatchers("/**").hasAnyRole("ADMINISTRATEUR", "UTILISATEUR")
-                .and().formLogin();
+
+                .anyRequest().authenticated()
+                .and().exceptionHandling()
+                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        http.addFilterBefore(filtre, UsernamePasswordAuthenticationFilter.class);
+
 
     }
 
     @Bean
     public PasswordEncoder creationPasswordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
+        return new BCryptPasswordEncoder();
     }
 
     @Override
