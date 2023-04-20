@@ -10,6 +10,7 @@ import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,9 @@ public class UtilisateurController {
 
     @Autowired
     JwtUtils jwtUtils;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping("/utilisateurs")
     @JsonView(VueUtilisateur.class)
@@ -88,6 +92,10 @@ public class UtilisateurController {
         Role role = new Role();
         role.setId(1);
         nouvelUtilisateur.setRole(role);
+
+        String passwordHache = passwordEncoder.encode("root");
+        nouvelUtilisateur.setMotDePasse(passwordHache);
+
         utilisateurDao.save(nouvelUtilisateur);
         return new ResponseEntity<>(nouvelUtilisateur,HttpStatus.CREATED);
 

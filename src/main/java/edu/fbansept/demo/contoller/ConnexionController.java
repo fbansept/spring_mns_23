@@ -5,6 +5,7 @@ import edu.fbansept.demo.dao.UtilisateurDao;
 import edu.fbansept.demo.model.Utilisateur;
 import edu.fbansept.demo.security.JwtUtils;
 import edu.fbansept.demo.security.MonUserDetails;
+import edu.fbansept.demo.security.MonUserDetailsService;
 import edu.fbansept.demo.view.VueUtilisateur;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,21 +40,28 @@ public class ConnexionController {
     @Autowired
     JwtUtils jwtUtils;
 
+    @Autowired
+    MonUserDetailsService userDetailsService;
+
     @PostMapping("/connexion")
     public ResponseEntity<String> connexion(@RequestBody Utilisateur utilisateur) {
 
+        MonUserDetails userDetails;
+
         try {
-            authenticationManager.authenticate(
+
+            userDetails = (MonUserDetails)authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             utilisateur.getEmail(),
                             utilisateur.getMotDePasse()
                     )
-            );
+            ).getPrincipal();
+
         } catch (BadCredentialsException e) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
-        return new ResponseEntity<>(jwtUtils.generateJwt(new MonUserDetails(utilisateur)), HttpStatus.OK);
+        return new ResponseEntity<>(jwtUtils.generateJwt(userDetails), HttpStatus.OK);
     }
 
     @PostMapping("/inscription")
