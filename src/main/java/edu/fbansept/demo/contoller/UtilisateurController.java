@@ -60,7 +60,7 @@ public class UtilisateurController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping("/utilisateur")
+    @PostMapping("/admin/utilisateur")
     public ResponseEntity<Utilisateur> ajoutUtilisateur(@RequestBody Utilisateur nouvelUtilisateur) {
 
         //si l'utilisateur fournit possède un id
@@ -93,7 +93,7 @@ public class UtilisateurController {
 
     }
 
-    @DeleteMapping("/utilisateur/{id}")
+    @DeleteMapping("/admin/utilisateur/{id}")
     @JsonView(VueUtilisateur.class)
     public ResponseEntity<Utilisateur> supprimeUtilisateur(@PathVariable int id) {
 
