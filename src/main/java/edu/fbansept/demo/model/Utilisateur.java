@@ -5,8 +5,13 @@ import edu.fbansept.demo.view.VueEntreprise;
 import edu.fbansept.demo.view.VueUtilisateur;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -53,4 +58,8 @@ public class Utilisateur {
     )
     @JsonView(VueUtilisateur.class)
     private Set<Emploi> emploisRecherche = new HashSet<>();
+
+    //@CreatedDate
+    @JsonView(VueUtilisateur.class)
+    private LocalDate createdAt;
 }

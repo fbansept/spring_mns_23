@@ -13,6 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -79,6 +83,7 @@ public class UtilisateurController {
                 userToUpdate.setNom(nouvelUtilisateur.getNom());
                 userToUpdate.setPrenom(nouvelUtilisateur.getPrenom());
                 userToUpdate.setEmail(nouvelUtilisateur.getEmail());
+                userToUpdate.setPays(nouvelUtilisateur.getPays());
 
                 utilisateurDao.save(userToUpdate);
                 return new ResponseEntity<>(nouvelUtilisateur,HttpStatus.OK);
@@ -95,6 +100,8 @@ public class UtilisateurController {
 
         String passwordHache = passwordEncoder.encode("root");
         nouvelUtilisateur.setMotDePasse(passwordHache);
+
+        nouvelUtilisateur.setCreatedAt(LocalDate.now());
 
         utilisateurDao.save(nouvelUtilisateur);
         return new ResponseEntity<>(nouvelUtilisateur,HttpStatus.CREATED);
