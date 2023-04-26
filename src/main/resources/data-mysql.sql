@@ -17,10 +17,10 @@ INSERT INTO `role` (`id`, `nom`) VALUES
 (1, 'ROLE_UTILISATEUR'),
 (2, 'ROLE_ADMINISTRATEUR');
 
-INSERT INTO utilisateur(prenom, nom, pays_id, entreprise_id, email, mot_de_passe, role_id, created_at)
+INSERT INTO utilisateur(prenom, nom, pays_id, entreprise_id, email, mot_de_passe, role_id, created_at, updated_at)
 VALUES
-("John","doe",2,1,"jd@a.com","$2a$10$wXW2wHA2bu1TdQ26p.2UoehWv8m92w88kabSeL.348VqkpWvSt51q",1,"2022-06-21"),
-("Franck","bansept",3,1,"fb@a.com","$2a$10$wXW2wHA2bu1TdQ26p.2UoehWv8m92w88kabSeL.348VqkpWvSt51q",2,"2023-01-02");
+("John","doe",2,1,"jd@a.com","$2a$10$wXW2wHA2bu1TdQ26p.2UoehWv8m92w88kabSeL.348VqkpWvSt51q",1,"2023-01-01","2023-01-03"),
+("Franck","bansept",3,1,"fb@a.com","$2a$10$wXW2wHA2bu1TdQ26p.2UoehWv8m92w88kabSeL.348VqkpWvSt51q",2,UTC_TIMESTAMP(),UTC_TIMESTAMP());
 
 INSERT INTO `recherche_emploi_utilisateur` (`utilisateur_id`, `emploi_id`) VALUES
 (1, 1),

@@ -5,6 +5,8 @@ import edu.fbansept.demo.view.VueEntreprise;
 import edu.fbansept.demo.view.VueUtilisateur;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
@@ -59,7 +61,11 @@ public class Utilisateur {
     @JsonView(VueUtilisateur.class)
     private Set<Emploi> emploisRecherche = new HashSet<>();
 
-    //@CreatedDate
+    @CreationTimestamp
     @JsonView(VueUtilisateur.class)
     private LocalDate createdAt;
+
+    @UpdateTimestamp
+    @JsonView(VueUtilisateur.class)
+    private LocalDateTime updatedAt;
 }

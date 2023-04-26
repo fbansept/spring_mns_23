@@ -5,14 +5,18 @@ import edu.fbansept.demo.dao.UtilisateurDao;
 import edu.fbansept.demo.model.Role;
 import edu.fbansept.demo.model.Utilisateur;
 import edu.fbansept.demo.security.JwtUtils;
+import edu.fbansept.demo.services.FichierService;
 import edu.fbansept.demo.view.VueUtilisateur;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Calendar;
@@ -29,6 +33,9 @@ public class UtilisateurController {
 
     @Autowired
     JwtUtils jwtUtils;
+
+    @Autowired
+    FichierService fichierService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -69,7 +76,10 @@ public class UtilisateurController {
     }
 
     @PostMapping("/admin/utilisateur")
-    public ResponseEntity<Utilisateur> ajoutUtilisateur(@RequestBody Utilisateur nouvelUtilisateur) {
+    public ResponseEntity<Utilisateur> ajoutUtilisateur(
+            @RequestPart("utilisateur") Utilisateur nouvelUtilisateur,
+            @Nullable @RequestParam("fichier")MultipartFile fichier
+    ) {
 
         //si l'utilisateur fournit possède un id
         if(nouvelUtilisateur.getId() != null) {
@@ -101,9 +111,16 @@ public class UtilisateurController {
         String passwordHache = passwordEncoder.encode("root");
         nouvelUtilisateur.setMotDePasse(passwordHache);
 
-        nouvelUtilisateur.setCreatedAt(LocalDate.now());
-
         utilisateurDao.save(nouvelUtilisateur);
+
+        if(fichier != null) {
+            try {
+                fichierService.transfertVersDossierUpload(fichier, "image_profil");
+            } catch (IOException e) {
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+
         return new ResponseEntity<>(nouvelUtilisateur,HttpStatus.CREATED);
 
     }
