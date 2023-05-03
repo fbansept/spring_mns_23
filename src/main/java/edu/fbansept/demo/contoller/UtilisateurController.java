@@ -2,6 +2,7 @@ package edu.fbansept.demo.contoller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import edu.fbansept.demo.dao.UtilisateurDao;
+import edu.fbansept.demo.model.ImageDto;
 import edu.fbansept.demo.model.Role;
 import edu.fbansept.demo.model.Utilisateur;
 import edu.fbansept.demo.security.JwtUtils;
@@ -9,20 +10,22 @@ import edu.fbansept.demo.services.FichierService;
 import edu.fbansept.demo.view.VueUtilisateur;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @CrossOrigin
@@ -61,6 +64,15 @@ public class UtilisateurController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    @GetMapping("/utilisateur-par-pays/{nomPays}")
+    @JsonView(VueUtilisateur.class)
+    public List<ImageDto> getUtilisateur(@PathVariable String nomPays) {
+
+        return utilisateurDao.testBidon();
+
+       // return utilisateurDao.trouveUtilisateurSelonPays(nomPays);
+    }
+
     @GetMapping("/profil")
     @JsonView(VueUtilisateur.class)
     public ResponseEntity<Utilisateur> getProfil(@RequestHeader("Authorization") String bearer) {
@@ -70,6 +82,35 @@ public class UtilisateurController {
 
         if(utilisateur.isPresent()) {
             return new ResponseEntity<>(utilisateur.get(), HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping("/image-profil/{idUtilisateur}")
+    public ResponseEntity<byte[]> getImageProfil(@PathVariable int idUtilisateur) {
+
+        Optional<Utilisateur> optional = utilisateurDao.findById(idUtilisateur);
+
+        if(optional.isPresent()) {
+
+            String nomImage = optional.get().getNomImageProfil();
+
+            try {
+                byte[] image = fichierService.getImageByName(nomImage);
+
+                HttpHeaders enTete = new HttpHeaders();
+                String mimeType = Files.probeContentType(new File(nomImage).toPath());
+                enTete.setContentType(MediaType.valueOf(mimeType));
+
+                return new ResponseEntity<>(image,enTete,HttpStatus.OK);
+
+            } catch (FileNotFoundException e) {
+               return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } catch (IOException e) {
+                System.out.println("Le test du mimetype a echoué");
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
         }
 
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -96,6 +137,15 @@ public class UtilisateurController {
                 userToUpdate.setPays(nouvelUtilisateur.getPays());
 
                 utilisateurDao.save(userToUpdate);
+
+//                if(fichier != null) {
+//                    try {
+//                        fichierService.transfertVersDossierUpload(fichier, "image_profil");
+//                    } catch (IOException e) {
+//                        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//                    }
+//                }
+
                 return new ResponseEntity<>(nouvelUtilisateur,HttpStatus.OK);
             }
 
@@ -111,15 +161,21 @@ public class UtilisateurController {
         String passwordHache = passwordEncoder.encode("root");
         nouvelUtilisateur.setMotDePasse(passwordHache);
 
-        utilisateurDao.save(nouvelUtilisateur);
+
 
         if(fichier != null) {
             try {
-                fichierService.transfertVersDossierUpload(fichier, "image_profil");
+
+                String nomImage = UUID.randomUUID() + "_" + fichier.getOriginalFilename();
+                nouvelUtilisateur.setNomImageProfil(nomImage);
+
+                fichierService.transfertVersDossierUpload(fichier, nomImage);
             } catch (IOException e) {
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
+
+        utilisateurDao.save(nouvelUtilisateur);
 
         return new ResponseEntity<>(nouvelUtilisateur,HttpStatus.CREATED);
 

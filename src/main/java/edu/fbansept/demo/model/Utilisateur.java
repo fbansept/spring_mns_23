@@ -39,6 +39,9 @@ public class Utilisateur {
     @JsonView({VueUtilisateur.class , VueEntreprise.class})
     private String email;
 
+    @JsonView(VueUtilisateur.class)
+    private String nomImageProfil;
+
     private String motDePasse;
 
     @JsonView({VueUtilisateur.class , VueEntreprise.class})

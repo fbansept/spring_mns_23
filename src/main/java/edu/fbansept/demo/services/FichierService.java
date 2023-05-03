@@ -1,10 +1,13 @@
 package edu.fbansept.demo.services;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,6 +31,18 @@ public class FichierService {
         Path destination = Paths.get(dossierUpload + "\\" + nomFichier);
 
         Files.copy(fichier.getInputStream(),destination, StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    public byte[] getImageByName(String nomImage) throws FileNotFoundException {
+
+        Path destination = Paths.get(dossierUpload+"/"+nomImage);// retrieve the image by its name
+
+        try {
+            return IOUtils.toByteArray(destination.toUri());
+        } catch (IOException e) {
+            throw new FileNotFoundException(e.getMessage());
+        }
+
     }
 
 
