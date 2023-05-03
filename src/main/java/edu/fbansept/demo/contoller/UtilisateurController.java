@@ -66,11 +66,8 @@ public class UtilisateurController {
 
     @GetMapping("/utilisateur-par-pays/{nomPays}")
     @JsonView(VueUtilisateur.class)
-    public List<ImageDto> getUtilisateur(@PathVariable String nomPays) {
-
-        return utilisateurDao.testBidon();
-
-       // return utilisateurDao.trouveUtilisateurSelonPays(nomPays);
+    public List<Utilisateur> getUtilisateur(@PathVariable String nomPays) {
+       return utilisateurDao.trouveUtilisateurSelonPays(nomPays);
     }
 
     @GetMapping("/profil")
