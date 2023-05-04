@@ -22,6 +22,7 @@ public class DemoApplication extends SpringBootServletInitializer {
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(DemoApplication.class);
 	}
+
 	@PostConstruct
 	public void init(){
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
