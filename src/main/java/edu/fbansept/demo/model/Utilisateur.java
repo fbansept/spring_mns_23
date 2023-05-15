@@ -12,10 +12,7 @@ import org.springframework.data.annotation.CreatedDate;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
@@ -45,8 +42,9 @@ public class Utilisateur {
     private String motDePasse;
 
     @JsonView({VueUtilisateur.class , VueEntreprise.class})
-    @ManyToOne
-    private Role role;
+    @ManyToMany
+    @JoinTable(name = "role_utilisateur" , inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private List<Role> roles = new ArrayList<>();
 
     @ManyToOne
     @JsonView(VueUtilisateur.class)

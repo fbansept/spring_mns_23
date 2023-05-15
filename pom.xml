@@ -18,6 +18,7 @@
 
 	<properties>
 		<java.version>11</java.version>
+		<skipUnitTest>false</skipUnitTest>
 	</properties>
 
 	<dependencies>
@@ -88,6 +89,7 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
+				<skipUnitTest>false</skipUnitTest>
 				<adresse_serveur_bdd>localhost:3306</adresse_serveur_bdd>
 				<nom_bdd>spring_mns_23</nom_bdd>
 				<utilisateur_bdd>root</utilisateur_bdd>
@@ -96,22 +98,25 @@
 				<nom_fichier_sql>mysql</nom_fichier_sql>
 				<initialisation_donnee_bdd>true</initialisation_donnee_bdd>
 				<mode_initialisation_donnee_bdd>always</mode_initialisation_donnee_bdd>
-				<dossier_upload>C:\\\\Users\\neofr\\OneDrive\\Documents\\cours\\java\\spring\\uploads</dossier_upload>
+				<dossier_upload>A changer dans le fichier C:\Users\neofr\.m2\settings.xml</dossier_upload>
+				<jwt_secret>azerty</jwt_secret>
 			</properties>
 		</profile>
 
 		<profile>
 			<id>prod</id>
 			<properties>
+				<skipUnitTest>true</skipUnitTest>
 				<adresse_serveur_bdd>172.18.0.2:3306</adresse_serveur_bdd>
 				<nom_bdd>spring_mns_23</nom_bdd>
 				<utilisateur_bdd>root</utilisateur_bdd>
-				<mot_de_passe_bdd>ookohgFUGIGGn45435jhkgbgk</mot_de_passe_bdd>
+				<mot_de_passe_bdd>Info à définir dans le fichier settings.xml du serveur</mot_de_passe_bdd>
 				<ddl_auto>none</ddl_auto>
 				<nom_fichier_sql></nom_fichier_sql>
 				<initialisation_donnee_bdd>false</initialisation_donnee_bdd>
 				<mode_initialisation_donnee_bdd>never</mode_initialisation_donnee_bdd>
 				<dossier_upload>/uploads</dossier_upload>
+				<jwt_secret>Info à définir dans le fichier settings.xml du serveur</jwt_secret>
 			</properties>
 		</profile>
 	</profiles>
@@ -137,7 +142,7 @@
 				<artifactId >maven-surefire-plugin</artifactId>
 				<version>3.0.0-M6</version>
 				<configuration>
-					<skipTests>true</skipTests>
+					<skipTests>${skipUnitTest}</skipTests>
 				</configuration>
 			</plugin>
 

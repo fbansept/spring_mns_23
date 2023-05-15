@@ -1,6 +1,5 @@
 package edu.fbansept.demo.dao;
 
-import edu.fbansept.demo.model.ImageDto;
 import edu.fbansept.demo.model.Utilisateur;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,11 +13,10 @@ import java.util.Optional;
 public interface UtilisateurDao extends JpaRepository<Utilisateur, Integer> {
     Utilisateur findByPrenom(String prenom);
 
-    Optional<Utilisateur> findByEmail(String email);
+    @Query("FROM Utilisateur U JOIN FETCH U.roles WHERE U.email = :email")
+    Optional<Utilisateur> findByEmail(@Param("email") String email);
 
     @Query("FROM Utilisateur U JOIN U.pays P WHERE P.nom = :toto")
     List<Utilisateur> trouveUtilisateurSelonPays(@Param("toto") String pays);
 
-    @Query("SELECT new edu.fbansept.demo.model.ImageDto(U.id, U.nomImageProfil) FROM Utilisateur U")
-    List<ImageDto> testBidon();
 }

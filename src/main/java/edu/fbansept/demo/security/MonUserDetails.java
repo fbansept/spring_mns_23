@@ -1,5 +1,6 @@
 package edu.fbansept.demo.security;
 
+import edu.fbansept.demo.model.Role;
 import edu.fbansept.demo.model.Utilisateur;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -37,11 +38,22 @@ public class MonUserDetails implements UserDetails {
 //        return utilisateur.isAdmin()
 //                ? List.of(new SimpleGrantedAuthority("ROLE_ADMINISTRATEUR"))
 //                : List.of(new SimpleGrantedAuthority("ROLE_UTILISATEUR"));
+//
+//        return List.of(new SimpleGrantedAuthority(utilisateur.isAdmin() ? "ROLE_ADMINISTRATEUR" : "ROLE_UTILISATEUR"));
 
-        //return List.of(new SimpleGrantedAuthority(utilisateur.isAdmin() ? "ROLE_ADMINISTRATEUR" : "ROLE_UTILISATEUR"));
+//        if(utilisateur.getRole() != null) {
+//            return List.of(new SimpleGrantedAuthority(utilisateur.getRole().getNom()));
+//        }
 
-        return List.of(new SimpleGrantedAuthority(utilisateur.getRole().getNom()));
+//        return List.of(new SimpleGrantedAuthority("ROLE_UTILISATEUR"));
 
+        List<GrantedAuthority> authorities = new ArrayList<>();
+
+        for(Role role : utilisateur.getRoles()) {
+            authorities.add(new SimpleGrantedAuthority(role.getNom()));
+        }
+
+        return authorities;
 
     }
 

@@ -53,9 +53,9 @@ public class ConfigurationSecurite extends WebSecurityConfigurerAdapter {
                 }).and()
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/admin/**").hasRole("ADMINISTRATEUR")
-                .antMatchers("/connexion", "/inscription", "/utilisateur-par-pays/**","/").permitAll()
-                .antMatchers("/**").hasAnyRole("ADMINISTRATEUR", "UTILISATEUR")
+                .antMatchers("/admin/**").hasAnyRole("ADMINISTRATEUR", "SUPER_ADMINISTRATEUR")
+                .antMatchers("/connexion", "/inscription", "/").permitAll()
+                .antMatchers("/**").hasAnyRole("UTILISATEUR", "ADMINISTRATEUR", "SUPER_ADMINISTRATEUR")
 
                 .anyRequest().authenticated()
                 .and().exceptionHandling()

@@ -2,7 +2,6 @@ package edu.fbansept.demo.contoller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import edu.fbansept.demo.dao.UtilisateurDao;
-import edu.fbansept.demo.model.ImageDto;
 import edu.fbansept.demo.model.Role;
 import edu.fbansept.demo.model.Utilisateur;
 import edu.fbansept.demo.security.JwtUtils;
@@ -23,8 +22,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -153,7 +150,7 @@ public class UtilisateurController {
 
         Role role = new Role();
         role.setId(1);
-        nouvelUtilisateur.setRole(role);
+        nouvelUtilisateur.getRoles().add(role);
 
         String passwordHache = passwordEncoder.encode("root");
         nouvelUtilisateur.setMotDePasse(passwordHache);
