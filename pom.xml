@@ -115,7 +115,7 @@
 				<nom_fichier_sql></nom_fichier_sql>
 				<initialisation_donnee_bdd>false</initialisation_donnee_bdd>
 				<mode_initialisation_donnee_bdd>never</mode_initialisation_donnee_bdd>
-				<dossier_upload>/uploads</dossier_upload>
+				<dossier_upload>/app/data</dossier_upload>
 				<jwt_secret>Info à définir dans le fichier settings.xml du serveur</jwt_secret>
 			</properties>
 		</profile>
