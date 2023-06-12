@@ -16,4 +16,4 @@ docker stop spring-demo-franck
 docker rm spring-demo-franck
 
 # Lancer un nouveau conteneur
-docker run -d --net backend --ip 172.18.0.5 --name=spring-demo-franck -p 8181:8080 -v upload_spring_mns_23:/temp spring-demo-franck
+docker run -d --net backend --ip 172.18.0.5 --name=spring-demo-franck -p 8181:8080 -v upload_spring_mns_23:/upload spring-demo-franck
