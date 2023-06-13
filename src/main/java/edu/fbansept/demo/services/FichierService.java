@@ -21,16 +21,20 @@ public class FichierService {
     private String dossierUpload;
 
     public void transfertVersDossierUpload(MultipartFile fichier, String nomFichier) throws IOException {
-
+        System.out.println(nomFichier);
         Path cheminDossierUpload = Paths.get(dossierUpload);
-
+        System.out.println(dossierUpload);
+        System.out.println(!Files.exists(cheminDossierUpload));
         if(!Files.exists(cheminDossierUpload)) {
             Files.createDirectories(cheminDossierUpload);
+            System.out.println("yep");
         }
-
+        System.out.println(dossierUpload + "\\" + nomFichier);
         Path destination = Paths.get(dossierUpload + "\\" + nomFichier);
+        System.out.println(destination.toString());
 
         Files.copy(fichier.getInputStream(),destination, StandardCopyOption.REPLACE_EXISTING);
+        System.out.println("DONE");
     }
 
     public byte[] getImageByName(String nomImage) throws FileNotFoundException {
