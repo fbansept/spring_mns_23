@@ -29,8 +29,8 @@ public class FichierService {
             Files.createDirectories(cheminDossierUpload);
             System.out.println("yep");
         }
-        System.out.println(dossierUpload + "\\" + nomFichier);
-        Path destination = Paths.get(dossierUpload + "\\" + nomFichier);
+        System.out.println(dossierUpload + "/" + nomFichier);
+        Path destination = Paths.get(dossierUpload + "/" + nomFichier);
         System.out.println(destination.toString());
 
         Files.copy(fichier.getInputStream(),destination, StandardCopyOption.REPLACE_EXISTING);
